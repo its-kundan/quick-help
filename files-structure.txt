@@ -9,7 +9,5 @@
 ├── index.html
 ├── manifest.json
 ├── popup.js
-├── public/
-│   └── data1.json
 ├── README.md
 └── styles.css
