@@ -51,6 +51,11 @@ Quick-links/
 
 ### 🛠️ Installation
 
+Zip file
+```bash
+cd dist
+zip -r ../quick-links-extension.zip ./*
+```
 dist
 `npm run build`
 or `
