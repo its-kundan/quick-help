@@ -1,3 +1,4 @@
+/* iOS/Apple-like mobile UI for Chrome Extension */
 html, body {
   width: 350px;
   min-height: 600px;
@@ -8,16 +9,18 @@ html, body {
   margin: 0 auto;
   font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   display: flex;
-  flex-direction: column;  /* ADD this line for column stacking */
   align-items: stretch;
-  height: 100vh;
+  /* Add these two lines: */
+  /* transform: scale(0.75); */
+  /* transform-origin: top center; */
 }
 
+
+
 .container {
-  flex: 1 1 auto;              /* Allow container to stretch to fill parent */
-  width: 100%;                 /* Take full available width */
-  min-height: 0;               /* Allow it to shrink if needed (for flex) */
-  min-width: 0;                /* Prevent overflow from wide children */
+  width: 100%;
+  min-height: 100%;
+  padding: 0 0 16px 0;
   display: flex;
   flex-direction: column;
   border-radius: 36px;
@@ -25,7 +28,6 @@ html, body {
   overflow: hidden;
   box-shadow: 0 1.5px 4px 0 rgba(60,60,67,0.15);
   border: 1.5px solid #e5e5ea;
-  transition: width 0.2s;
 }
 
 .header {
