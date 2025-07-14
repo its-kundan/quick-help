@@ -2,4 +2,15 @@
 2. on clicking on chrome extension it ask for the storage permission ( it got denied due to that the chrome extension is not storing the data in local or syn) I have to fix it.
 3. Idea: can I make a vscode extension to write down the features, idea, issue with tracking .
 4. can I integrate jira with vs code.
-5. 
+
+
+1. Quick Notes
+2. ToDo list
+3. share the data.json formate, ( import + export data) // rare
+4. UI should look like Mobile ( apple or sumsung)
+5. add dark and light theme as well
+6. setting (redirecting to website)
+7. premium feature,
+(unlimited data, unlimited to do list, free app, syn accross over the device)
+8. website include how to use the application.
+9. list out the premium ( backend. and turbo required.)
