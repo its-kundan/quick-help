@@ -25,6 +25,18 @@ if (!document.querySelector('.add-btn')) {
     </button>
   `);
 }
+// --- Inject Dark Mode Toggle Button (if not already present) ---
+if (!document.querySelector('.darkmode-btn')) {
+  header.insertAdjacentHTML('afterbegin', `
+    <button class="darkmode-btn" title="Toggle Dark Mode">
+      <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9.5" stroke="#444" stroke-width="1.2" fill="#fff"/>
+        <path d="M16 12a4 4 0 01-4 4 4 4 0 010-8" stroke="#222" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
+  `);
+}
+
 
 // --- Inject Modal HTML (if not already present) ---
 if (!document.getElementById('itemModal')) {
@@ -73,6 +85,24 @@ function init() {
     alert("chrome.storage is not available! Are you running as an extension?");
   }
 }
+
+// --- Dark Mode toggle logic ---
+const DARKMODE_KEY = "quickLinksDarkMode";
+const root = document.documentElement;
+
+// Restore previous mode
+chrome.storage.local.get([DARKMODE_KEY], result => {
+  if (result[DARKMODE_KEY]) {
+    root.classList.add('darkmode');
+  }
+});
+
+// Toggle on click
+document.querySelector('.darkmode-btn').onclick = function() {
+  root.classList.toggle('darkmode');
+  chrome.storage.local.set({ [DARKMODE_KEY]: root.classList.contains('darkmode') });
+};
+
 
 function isChromeStorageAvailable() {
   return typeof chrome !== "undefined" && chrome.storage && chrome.storage.sync && chrome.storage.local;

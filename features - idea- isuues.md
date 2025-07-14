@@ -14,3 +14,14 @@
 (unlimited data, unlimited to do list, free app, syn accross over the device)
 8. website include how to use the application.
 9. list out the premium ( backend. and turbo required.)
+
+
+1. add the other 
+2. quick note as well.
+3. to do list as well.
+4. reorder the button (op)
+5. setting page (op)
+
+
+1. checklist
+2. to do list (app + chrome ext + website + backend)
