@@ -1,0 +1,59 @@
+# Node modules
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor-specific files
+.vscode/
+.idea/
+
+# Env files
+.env
+.env.*.local
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Mac/Linux temporary files
+*.swp
+*.swo
+
+# Windows thumbnail cache
+ehthumbs.db
+Desktop.ini
+
+# coverage reports
+coverage/
+
+# Chrome extension specific (optional if generated dynamically)
+*.crx
+*.pem
+*.zip
+
+# Optional: ignore test output
+test-output/
+*.test.js
+*.spec.js
+
+# Ignore React/Next.js/Vite cache
+.cache/
+.next/
+.vite/
+
+# Ignore generated lock files (only if you're not using a specific one)
+# Uncomment the one you don’t use
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
