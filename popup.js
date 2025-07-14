@@ -1,3 +1,5 @@
+// Quick Links CRUD with chrome.storage.sync & chrome.storage.local and duplicate warning
+
 let currentType = 'link';
 let searchTerm = '';
 const STORAGE_KEY = 'quickLinksData';
@@ -10,11 +12,6 @@ const header = document.querySelector('.header');
 
 let allItems = [];
 let editIndex = null;
-
-// Check chrome.storage exists before using!
-function isChromeStorageAvailable() {
-  return typeof chrome !== "undefined" && chrome.storage && chrome.storage.sync && chrome.storage.local;
-}
 
 // --- Inject Add Button (if not already present) ---
 if (!document.querySelector('.add-btn')) {
@@ -34,6 +31,7 @@ if (!document.getElementById('itemModal')) {
     <div class="modal" id="itemModal" style="display:none;">
       <div class="modal-content">
         <h2 id="modalTitle">Add Item</h2>
+        <div id="modalWarning" style="color:#dc2626;font-size:13px;min-height:22px;margin-bottom:2px"></div>
         <input id="itemName" placeholder="Name" type="text" required />
         <input id="itemLink" placeholder="URL or Prompt" type="text" required />
         <select id="itemType">
@@ -59,6 +57,10 @@ function init() {
   }
 }
 
+function isChromeStorageAvailable() {
+  return typeof chrome !== "undefined" && chrome.storage && chrome.storage.sync && chrome.storage.local;
+}
+
 function setupEventListeners() {
   toggleButtons.forEach(btn =>
     btn.addEventListener('click', () => setActiveType(btn.dataset.type))
@@ -71,9 +73,6 @@ function setupEventListeners() {
 
   // Add button
   document.querySelector('.add-btn').onclick = () => openModal();
-
-  // Save/Cancel must always be bound on modal open for reliability!
-  // Not in setupEventListeners
 
   // Delegate for Copy, Edit, Delete
   itemsContainer.addEventListener('click', e => {
@@ -208,26 +207,59 @@ function openModal(item = null, idx = null) {
   document.getElementById('itemName').value = item ? item.name : '';
   document.getElementById('itemLink').value = item ? item.link : '';
   document.getElementById('itemType').value = item ? item.type : currentType;
+  document.getElementById('modalWarning').textContent = '';
   editIndex = idx;
 
-  // Ensure Save/Cancel are always bound freshly each time
-  document.getElementById('cancelItemBtn').onclick = closeModal;
-  document.getElementById('saveItemBtn').onclick = saveItem;
+  // Effect for Save/Cancel
+  const saveBtn = document.getElementById('saveItemBtn');
+  const cancelBtn = document.getElementById('cancelItemBtn');
+  saveBtn.classList.remove('save-btn-effect');
+  cancelBtn.classList.remove('cancel-btn-effect');
+
+  saveBtn.onclick = function() {
+    saveBtn.classList.add('save-btn-effect');
+    setTimeout(() => saveBtn.classList.remove('save-btn-effect'), 1000);
+    saveItem();
+  };
+  cancelBtn.onclick = function() {
+    cancelBtn.classList.add('cancel-btn-effect');
+    setTimeout(() => cancelBtn.classList.remove('cancel-btn-effect'), 1000);
+    closeModal();
+  };
 }
+
 
 function closeModal() {
   document.getElementById('itemModal').style.display = 'none';
+  document.getElementById('modalWarning').textContent = '';
   editIndex = null;
 }
 
+// --- Duplicate check and save ---
 function saveItem() {
   const name = document.getElementById('itemName').value.trim();
   const link = document.getElementById('itemLink').value.trim();
   const type = document.getElementById('itemType').value;
+  const warningDiv = document.getElementById('modalWarning');
+  warningDiv.textContent = '';
+
   if (!name || !link) {
-    showToast('Name and Link/Prompt required');
+    warningDiv.textContent = 'Name and Link/Prompt required';
     return;
   }
+
+  // Check for duplicate (excluding current item if editing)
+  const duplicate = allItems.some((item, idx) =>
+    idx !== editIndex &&
+    ((item.name === name && item.type === type) ||
+     (item.link === link && item.type === type))
+  );
+
+  if (duplicate) {
+    warningDiv.textContent = 'Data already exists!';
+    return;
+  }
+
   const item = { name, link, type };
   if (editIndex !== null) {
     allItems[editIndex] = item;

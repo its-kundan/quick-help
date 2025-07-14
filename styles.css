@@ -75,3 +75,39 @@ body { width: 280px; height: 350px; font-family: -apple-system, BlinkMacSystemFo
 .modal-content button {
   padding: 8px; border-radius: 6px; border: none; margin-top: 8px;
 }
+.save-btn-effect {
+  background: #dc2626  !important; /* green */
+  color: #fff !important;
+  transition: background 2s;
+}
+.cancel-btn-effect {
+  background: #dc2626 !important; /* red */
+  color: #fff !important;
+  transition: background 2s;
+}
+#confirmDeleteBtn {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#confirmDeleteBtn:hover {
+  background: #b91c1c;
+}
+#cancelDeleteBtn {
+  background: #f3f4f6;
+  color: #1e293b;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#cancelDeleteBtn:hover {
+  background: #e5e7eb;
+}
