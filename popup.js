@@ -14,6 +14,8 @@ let allItems = [];
 let editIndex = null;
 let pendingDeleteIndex = null;
 
+document.documentElement.classList.add('darkmode');
+
 // --- Inject Add Button (if not already present) ---
 if (!document.querySelector('.add-btn')) {
   header.insertAdjacentHTML('beforeend', `
@@ -73,6 +75,17 @@ if (!document.getElementById('deleteConfirmModal')) {
     </div>
   `);
 }
+function updateNotchTime() {
+  const now = new Date();
+  const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  const date = now.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  const timeSpan = document.getElementById('notch-time');
+  const dateSpan = document.getElementById('notch-date');
+  if (timeSpan) timeSpan.textContent = time;
+  if (dateSpan) dateSpan.textContent = date;
+}
+setInterval(updateNotchTime, 2000);
+document.addEventListener('DOMContentLoaded', updateNotchTime);
 
 // --- Initialization ---
 init();

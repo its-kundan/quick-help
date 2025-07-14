@@ -1,37 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Quick Links & Prompts</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>Quick Access</h1>
-      <p>Links and prompts at your fingertips</p>
-    </div>
-    <div class="toggle-buttons">
-      <button class="toggle-btn active" data-type="link">🔗 Links</button>
-      <button class="toggle-btn" data-type="prompt">✍️ Prompts</button>
-    </div>
-    <div class="search-container">
-      <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-      </svg>
-      <input type="text" class="search-input" placeholder="Search..." id="searchInput">
-    </div>
-    <div class="items-container" id="itemsContainer"></div>
-  </div>
-
-  <div class="toast" id="toast">
-    <svg fill="currentColor" viewBox="0 0 20 20">
-      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quick Links & Prompts</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="scale-wrapper">
+      <div class="notch-bar">
+        <span id="notch-time"></span>
+        <span id="notch-date"></span>
+      </div>
+      <div class="container">
+        <div class="header">
+          <div class="linkedin-link">
+  <a href="https://www.linkedin.com/in/YOUR-LINKEDIN-USERNAME" target="_blank" rel="noopener noreferrer" title="View my LinkedIn">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="#0077b5" style="vertical-align:middle;">
+      <rect width="24" height="24" rx="6" fill="#fff"/>
+      <path d="M6.94 7.2c0 .55-.42 1-1.1 1-.67 0-1.1-.45-1.1-1 0-.56.43-1 1.12-1 .67 0 1.08.44 1.08 1zm-.13 1.66H4.71V17h2.09v-8.14zm3.15 0h-2.08V17h2.08v-4.06c0-1.02.36-1.72 1.28-1.72.7 0 1.11.47 1.11 1.54V17h2.08v-4.47c0-2.37-1.26-3.47-2.95-3.47-1.37 0-1.97.78-2.31 1.34h.02v-1.15z" fill="#0077b5"/>
     </svg>
-    <span>Copied!</span>
-  </div>
+  </a>
+</div>
 
-  <script type="module" src="popup.js"></script>
-</body>
+          <h1>Quick Access</h1>
+          <p>Links and prompts at your fingertips</p>
+        </div>
+        <div class="toggle-buttons">
+          <button class="toggle-btn active" data-type="link">🔗 Links</button>
+          <button class="toggle-btn" data-type="prompt">✍️ Prompts</button>
+        </div>
+        <div class="search-container">
+          <svg
+            class="search-icon"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search..."
+            id="searchInput"
+          />
+        </div>
+        <div class="items-container" id="itemsContainer"></div>
+      </div>
+       </div>
+    <div class="home-bar"></div>
+    </div>
+
+    <div class="toast" id="toast">
+      <svg fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      <span>Copied!</span>
+    </div>
+
+    <script type="module" src="popup.js"></script>
+  </body>
 </html>
