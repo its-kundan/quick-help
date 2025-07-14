@@ -1,4 +1,4 @@
-// Quick Links CRUD with chrome.storage.sync & chrome.storage.local and duplicate warning
+// Quick Links CRUD with chrome.storage.sync & chrome.storage.local and duplicate warning, custom delete confirmation, and button click effects
 
 let currentType = 'link';
 let searchTerm = '';
@@ -12,6 +12,7 @@ const header = document.querySelector('.header');
 
 let allItems = [];
 let editIndex = null;
+let pendingDeleteIndex = null;
 
 // --- Inject Add Button (if not already present) ---
 if (!document.querySelector('.add-btn')) {
@@ -40,6 +41,22 @@ if (!document.getElementById('itemModal')) {
         </select>
         <button id="saveItemBtn" type="button">Save</button>
         <button id="cancelItemBtn" type="button">Cancel</button>
+      </div>
+    </div>
+  `);
+}
+
+// --- Inject Delete Confirmation Modal ---
+if (!document.getElementById('deleteConfirmModal')) {
+  document.body.insertAdjacentHTML('beforeend', `
+    <div class="modal" id="deleteConfirmModal" style="display:none;">
+      <div class="modal-content">
+        <h2>Delete Item?</h2>
+        <p style="margin-bottom:12px;color:#dc2626;">Once deleted, you can’t reverse this action.</p>
+        <div style="display:flex;gap:12px;">
+          <button id="confirmDeleteBtn" type="button" style="background:#dc2626;color:#fff;">Yes, Delete</button>
+          <button id="cancelDeleteBtn" type="button">No, Cancel</button>
+        </div>
       </div>
     </div>
   `);
@@ -74,7 +91,7 @@ function setupEventListeners() {
   // Add button
   document.querySelector('.add-btn').onclick = () => openModal();
 
-  // Delegate for Copy, Edit, Delete
+  // Main CRUD buttons
   itemsContainer.addEventListener('click', e => {
     // Copy
     const copyBtn = e.target.closest('.copy-btn');
@@ -89,15 +106,11 @@ function setupEventListeners() {
       openModal(allItems[idx], idx);
       return;
     }
-    // Delete
+    // Delete (show custom modal)
     const delBtn = e.target.closest('.delete-btn');
     if (delBtn) {
       const idx = Number(delBtn.dataset.idx);
-      if (confirm("Delete this item?")) {
-        allItems.splice(idx, 1);
-        persistAndRender();
-        showToast('Deleted');
-      }
+      showDeleteConfirm(idx);
     }
   });
 }
@@ -200,7 +213,7 @@ function renderItems() {
   }).join('');
 }
 
-// --- Modal Logic ---
+// --- Modal Logic (with button effect) ---
 function openModal(item = null, idx = null) {
   document.getElementById('itemModal').style.display = 'flex';
   document.getElementById('modalTitle').textContent = idx !== null ? 'Edit Item' : 'Add Item';
@@ -227,7 +240,6 @@ function openModal(item = null, idx = null) {
     closeModal();
   };
 }
-
 
 function closeModal() {
   document.getElementById('itemModal').style.display = 'none';
@@ -276,6 +288,27 @@ function persistAndRender() {
     chrome.storage.local.set({ [STORAGE_KEY]: allItems });
   }
   renderItems();
+}
+
+// --- Custom Delete Confirmation ---
+function showDeleteConfirm(idx) {
+  pendingDeleteIndex = idx;
+  const delModal = document.getElementById('deleteConfirmModal');
+  delModal.style.display = 'flex';
+
+  document.getElementById('confirmDeleteBtn').onclick = function() {
+    if (pendingDeleteIndex !== null) {
+      allItems.splice(pendingDeleteIndex, 1);
+      persistAndRender();
+      showToast('Deleted');
+      pendingDeleteIndex = null;
+    }
+    delModal.style.display = 'none';
+  };
+  document.getElementById('cancelDeleteBtn').onclick = function() {
+    delModal.style.display = 'none';
+    pendingDeleteIndex = null;
+  };
 }
 
 // --- Load Data ---
