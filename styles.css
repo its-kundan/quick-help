@@ -30,3 +30,48 @@ body { width: 280px; height: 350px; font-family: -apple-system, BlinkMacSystemFo
 .items-container::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 3px; }
 .items-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 .items-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+.add-btn {
+  background: #10b981;
+  border: none;
+  border-radius: 6px;
+  margin-left: 8px;
+  cursor: pointer;
+  padding: 4px 8px;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.2s;
+}
+.add-btn:hover { background: #059669; }
+
+.crud-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.edit-btn, .delete-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+.edit-btn:hover { background: #dbeafe; }
+.delete-btn:hover { background: #fee2e2; }
+
+.modal {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.2); z-index: 10001;
+}
+.modal-content {
+  background: #fff; border-radius: 12px; padding: 20px 24px; min-width: 220px;
+  display: flex; flex-direction: column; gap: 12px; align-items: stretch;
+  box-shadow: 0 2px 24px rgba(0,0,0,0.12);
+}
+.modal-content input, .modal-content select {
+  padding: 8px; font-size: 14px; border-radius: 6px; border: 1px solid #ddd;
+}
+.modal-content button {
+  padding: 8px; border-radius: 6px; border: none; margin-top: 8px;
+}
