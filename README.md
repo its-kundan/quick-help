@@ -51,6 +51,10 @@ Quick-links/
 
 ### 🛠️ Installation
 
+dist
+`npm run build`
+or `
+
 1. **Clone this repository**:
 
 ```bash
