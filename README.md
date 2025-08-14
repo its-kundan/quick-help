@@ -1,14 +1,3 @@
-Here is a **fully detailed and professional `README.md`** for your Chrome Extension project, including:
-
-* Clean introduction
-* Usage instructions
-* Screenshots
-* Folder structure
-* Customization steps
-* Publishing instructions
-* And most importantly: **your complete learnings and takeaways**
-
----
 
 
 # 📌 Quick Links & Prompts — Chrome Extension
@@ -37,15 +26,12 @@ A sleek, mobile-inspired Chrome Extension that helps you save, manage, and acces
 - 🔒 **No Login Required** – Fully secure client-side storage.
 - 🧠 **Minimal Permissions** – Only asks for what it needs (`storage`, `clipboardWrite`).
 
----
-
 ## 📸 Screenshots
 
 | Links Tab | Prompts Tab | Add Modal | Confirmation | iOS Notch |
 |-----------|-------------|-----------|--------------|-----------|
 | ![](public/1.png) | ![](public/2.png) | ![](public/3.png) | ![](public/4.png) | ![](public/5.png) |
 
----
 
 ## 📂 Folder Structure
 
@@ -108,13 +94,18 @@ bash build.sh
 ### 1. Prepare `.zip`
 
 ```bash
-cd dist
-zip -r ../quick-links-extension.zip ./*
+cd dist && rm -f ../quick-links-extension.zip && zip -r ../quick-links-extension.zip ./*
+
 ```
 
 Or for PowerShell:
 
 ```powershell
+Compress-Archive -Path .\dist\* -DestinationPath .\quick-links-extension.zip
+```
+
+```
+if (Test-Path .\quick-links-extension.zip) { Remove-Item .\quick-links-extension.zip }
 Compress-Archive -Path .\dist\* -DestinationPath .\quick-links-extension.zip
 ```
 
