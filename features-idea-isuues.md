@@ -4,11 +4,11 @@
 4. can I integrate jira with vs code.
 
 
-1. Quick Notes
-2. ToDo list
-3. share the data.json formate, ( import + export data) // rare
+1. Quick Notes 
+2. ToDo list - NO
+3. share the data.json formate, ( import + export data) 
 4. UI should look like Mobile ( apple or sumsung)
-5. add dark and light theme as well
+5. add dark and light theme as well - done
 6. setting (redirecting to website)
 7. premium feature,
 (unlimited data, unlimited to do list, free app, syn accross over the device)

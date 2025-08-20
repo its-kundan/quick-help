@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Quick Links & Prompts</title>
+  <title>Settings Test - Quick Links & Prompts</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
   <div class="scale-wrapper">
     <div class="notch-bar">
@@ -39,11 +37,24 @@
         </svg>
         <input type="text" class="search-input" placeholder="Search..." id="searchInput" />
       </div>
-      <div class="items-container" id="itemsContainer"></div>
+      <div class="items-container" id="itemsContainer">
+        <div class="item-card">
+          <div class="item-header">
+            <span class="item-name">Test Item</span>
+            <button class="copy-btn" data-content="https://example.com">
+              <svg fill="currentColor" viewBox="0 0 20 20">
+                <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+              </svg>
+              Copy
+            </button>
+          </div>
+          <div class="item-content">https://example.com</div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="home-bar"></div>
-  </div>
 
   <div class="toast" id="toast">
     <svg fill="currentColor" viewBox="0 0 20 20">
@@ -167,7 +178,191 @@
     <div class="home-bar"></div>
   </div>
 
-  <script type="module" src="popup.js"></script>
-</body>
+  <script>
+    // Test data
+    const testData = [
+      { name: "Google", link: "https://www.google.com", type: "link" },
+      { name: "YouTube", link: "https://www.youtube.com", type: "link" },
+      { name: "Test Prompt", link: "This is a test prompt for testing purposes.", type: "prompt" }
+    ];
 
+    // Settings functionality
+    function setupSettingsPage() {
+      const settingsBtn = document.getElementById('settingsBtn');
+      const settingsPage = document.getElementById('settingsPage');
+      const backToMainBtn = document.getElementById('backToMainBtn');
+      const exportBtn = document.getElementById('exportBtn');
+      const exportActions = document.getElementById('exportActions');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const copyDataBtn = document.getElementById('copyDataBtn');
+      const importBtn = document.getElementById('importBtn');
+      const importFile = document.getElementById('importFile');
+
+      if (!settingsBtn || !settingsPage || !backToMainBtn || !exportBtn || !exportActions || !downloadBtn || !copyDataBtn || !importBtn || !importFile) {
+        console.error('Settings page elements not found');
+        return;
+      }
+
+      settingsBtn.addEventListener('click', () => {
+        settingsPage.style.display = 'flex';
+        updateSettingsNotchTime();
+      });
+
+      backToMainBtn.addEventListener('click', () => {
+        settingsPage.style.display = 'none';
+      });
+
+      exportBtn.addEventListener('click', () => {
+        exportActions.style.display = 'flex';
+      });
+
+      downloadBtn.addEventListener('click', () => {
+        downloadData();
+      });
+
+      copyDataBtn.addEventListener('click', () => {
+        copyDataToClipboard();
+      });
+
+      // Import button click
+      importBtn.addEventListener('click', () => {
+        importFile.click();
+      });
+
+      // Import file change
+      importFile.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          importDataFromFile(file);
+        }
+      });
+    }
+
+    function updateSettingsNotchTime() {
+      const now = new Date();
+      const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      const date = now.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      const timeSpan = document.getElementById('settings-notch-time');
+      const dateSpan = document.getElementById('settings-notch-date');
+      if (timeSpan) timeSpan.textContent = time;
+      if (dateSpan) dateSpan.textContent = date;
+    }
+
+    function downloadData() {
+      const dataStr = JSON.stringify(testData, null, 2);
+      const dataBlob = new Blob([dataStr], {type: 'application/json'});
+      const url = URL.createObjectURL(dataBlob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `quick-links-data-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      showToast('Data downloaded!');
+    }
+
+    function copyDataToClipboard() {
+      const dataStr = JSON.stringify(testData, null, 2);
+      
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(dataStr).then(() => {
+          showToast('Data copied to clipboard!');
+        }).catch(() => {
+          fallbackCopyTextToClipboard(dataStr);
+        });
+      } else {
+        fallbackCopyTextToClipboard(dataStr);
+      }
+    }
+
+    function fallbackCopyTextToClipboard(text) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      
+      try {
+        document.execCommand('copy');
+        showToast('Data copied to clipboard!');
+      } catch (err) {
+        showToast('Failed to copy data');
+      }
+      
+      document.body.removeChild(textArea);
+    }
+
+    // Import data from JSON file
+    function importDataFromFile(file) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          
+          // Validate the imported data structure
+          if (Array.isArray(importedData) && importedData.length > 0) {
+            // Check if each item has the required properties
+            const isValidData = importedData.every(item => 
+              item && typeof item === 'object' && 
+              item.name && item.link && item.type
+            );
+            
+            if (isValidData) {
+              // Replace current data with imported data
+              testData.length = 0; // Clear array
+              testData.push(...importedData); // Add imported data
+              showToast('Data imported successfully!');
+            } else {
+              showToast('Invalid data format in file');
+            }
+          } else {
+            showToast('No valid data found in file');
+          }
+        } catch (error) {
+          console.error('Error parsing JSON:', error);
+          showToast('Error reading file. Please check the format.');
+        }
+      };
+      
+      reader.onerror = function() {
+        showToast('Error reading file');
+      };
+      
+      reader.readAsText(file);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.querySelector('span').textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    function updateNotchTime() {
+      const now = new Date();
+      const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      const date = now.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      const timeSpan = document.getElementById('notch-time');
+      const dateSpan = document.getElementById('notch-date');
+      if (timeSpan) timeSpan.textContent = time;
+      if (dateSpan) dateSpan.textContent = date;
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      setupSettingsPage();
+      updateNotchTime();
+      setInterval(updateNotchTime, 2000);
+    });
+  </script>
+</body>
 </html>

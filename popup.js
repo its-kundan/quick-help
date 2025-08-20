@@ -92,6 +92,7 @@ init();
 
 function init() {
   setupEventListeners();
+  setupSettingsPage();
   if (isChromeStorageAvailable()) {
     loadDataAndRender();
   } else {
@@ -379,3 +380,166 @@ function loadDataAndRender() {
     }
   });
 }
+
+// --- Settings Page Functionality ---
+function setupSettingsPage() {
+  const settingsBtn = document.getElementById('settingsBtn');
+  const settingsPage = document.getElementById('settingsPage');
+  const backToMainBtn = document.getElementById('backToMainBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const exportActions = document.getElementById('exportActions');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const copyDataBtn = document.getElementById('copyDataBtn');
+  const importBtn = document.getElementById('importBtn');
+  const importFile = document.getElementById('importFile');
+
+  // Check if elements exist before adding event listeners
+  if (!settingsBtn || !settingsPage || !backToMainBtn || !exportBtn || !exportActions || !downloadBtn || !copyDataBtn || !importBtn || !importFile) {
+    console.error('Settings page elements not found');
+    return;
+  }
+
+  // Settings button click
+  settingsBtn.addEventListener('click', () => {
+    settingsPage.style.display = 'flex';
+    updateSettingsNotchTime();
+  });
+
+  // Back button click
+  backToMainBtn.addEventListener('click', () => {
+    settingsPage.style.display = 'none';
+  });
+
+  // Export button click
+  exportBtn.addEventListener('click', () => {
+    exportActions.style.display = 'flex';
+  });
+
+  // Download button click
+  downloadBtn.addEventListener('click', () => {
+    downloadData();
+  });
+
+  // Copy data button click
+  copyDataBtn.addEventListener('click', () => {
+    copyDataToClipboard();
+  });
+
+  // Import button click
+  importBtn.addEventListener('click', () => {
+    importFile.click();
+  });
+
+  // Import file change
+  importFile.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      importDataFromFile(file);
+    }
+  });
+}
+
+// Update settings page notch time
+function updateSettingsNotchTime() {
+  const now = new Date();
+  const time = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  const date = now.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  const timeSpan = document.getElementById('settings-notch-time');
+  const dateSpan = document.getElementById('settings-notch-date');
+  if (timeSpan) timeSpan.textContent = time;
+  if (dateSpan) dateSpan.textContent = date;
+}
+
+// Download data as JSON file
+function downloadData() {
+  const dataStr = JSON.stringify(allItems, null, 2);
+  const dataBlob = new Blob([dataStr], {type: 'application/json'});
+  const url = URL.createObjectURL(dataBlob);
+  
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `quick-links-data-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  
+  showToast('Data downloaded!');
+}
+
+// Copy data to clipboard
+function copyDataToClipboard() {
+  const dataStr = JSON.stringify(allItems, null, 2);
+  
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(dataStr).then(() => {
+      showToast('Data copied to clipboard!');
+    }).catch(() => {
+      fallbackCopyTextToClipboard(dataStr);
+    });
+  } else {
+    fallbackCopyTextToClipboard(dataStr);
+  }
+}
+
+// Fallback copy method for older browsers
+function fallbackCopyTextToClipboard(text) {
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  textArea.style.position = 'fixed';
+  textArea.style.left = '-999999px';
+  textArea.style.top = '-999999px';
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  
+  try {
+    document.execCommand('copy');
+    showToast('Data copied to clipboard!');
+  } catch (err) {
+    showToast('Failed to copy data');
+  }
+  
+  document.body.removeChild(textArea);
+}
+
+// Import data from JSON file
+function importDataFromFile(file) {
+  const reader = new FileReader();
+  
+  reader.onload = function(e) {
+    try {
+      const importedData = JSON.parse(e.target.result);
+      
+      // Validate the imported data structure
+      if (Array.isArray(importedData) && importedData.length > 0) {
+        // Check if each item has the required properties
+        const isValidData = importedData.every(item => 
+          item && typeof item === 'object' && 
+          item.name && item.link && item.type
+        );
+        
+        if (isValidData) {
+          // Replace current data with imported data
+          allItems = importedData;
+          persistAndRender();
+          showToast('Data imported successfully!');
+        } else {
+          showToast('Invalid data format in file');
+        }
+      } else {
+        showToast('No valid data found in file');
+      }
+    } catch (error) {
+      console.error('Error parsing JSON:', error);
+      showToast('Error reading file. Please check the format.');
+    }
+  };
+  
+  reader.onerror = function() {
+    showToast('Error reading file');
+  };
+  
+  reader.readAsText(file);
+}
+
