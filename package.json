@@ -1,7 +1,9 @@
 {
   "scripts": {
-  "build": "node build.js"
-},
+    "build": "node build.js",
+    "build:shell": "bash build.sh",
+    "clean": "rm -rf dist"
+  },
   "devDependencies": {
     "fs-extra": "^11.3.0"
   }
