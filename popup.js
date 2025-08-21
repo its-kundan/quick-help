@@ -3,6 +3,8 @@
 let currentType = 'link';
 let searchTerm = '';
 const STORAGE_KEY = 'quickLinksData';
+const BUTTON_ORDER_KEY = 'toggleButtonOrder';
+const ITEM_ORDER_KEY = 'itemOrder';
 
 const toggleButtons = document.querySelectorAll('.toggle-btn');
 const searchInput = document.getElementById('searchInput');
@@ -98,6 +100,7 @@ function init() {
   setupSettingsPage();
   if (isChromeStorageAvailable()) {
     loadDataAndRender();
+    loadToggleButtonOrder();
   } else {
     alert("chrome.storage is not available! Are you running as an extension?");
   }
@@ -125,6 +128,211 @@ function isChromeStorageAvailable() {
   return typeof chrome !== "undefined" && chrome.storage && chrome.storage.sync && chrome.storage.local;
 }
 
+// --- Drag and Drop for Toggle Buttons ---
+function setupToggleButtonDragAndDrop() {
+  const toggleButtonsContainer = document.getElementById('toggleButtons');
+  const buttons = toggleButtonsContainer.querySelectorAll('.toggle-btn');
+  
+  buttons.forEach(button => {
+    button.addEventListener('dragstart', handleToggleButtonDragStart);
+    button.addEventListener('dragend', handleToggleButtonDragEnd);
+    button.addEventListener('dragover', handleToggleButtonDragOver);
+    button.addEventListener('drop', handleToggleButtonDrop);
+    button.addEventListener('dragenter', handleToggleButtonDragEnter);
+    button.addEventListener('dragleave', handleToggleButtonDragLeave);
+  });
+}
+
+function handleToggleButtonDragStart(e) {
+  e.target.classList.add('dragging');
+  e.dataTransfer.setData('text/plain', e.target.dataset.type);
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleToggleButtonDragEnd(e) {
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.classList.remove('drag-over');
+  });
+}
+
+function handleToggleButtonDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+}
+
+function handleToggleButtonDragEnter(e) {
+  e.preventDefault();
+  if (e.target.classList.contains('toggle-btn')) {
+    e.target.classList.add('drag-over');
+  }
+}
+
+function handleToggleButtonDragLeave(e) {
+  if (e.target.classList.contains('toggle-btn')) {
+    e.target.classList.remove('drag-over');
+  }
+}
+
+function handleToggleButtonDrop(e) {
+  e.preventDefault();
+  const draggedType = e.dataTransfer.getData('text/plain');
+  const targetType = e.target.dataset.type;
+  
+  if (draggedType && targetType && draggedType !== targetType) {
+    reorderToggleButtons(draggedType, targetType);
+  }
+  
+  e.target.classList.remove('drag-over');
+}
+
+function reorderToggleButtons(draggedType, targetType) {
+  const container = document.getElementById('toggleButtons');
+  const buttons = Array.from(container.querySelectorAll('.toggle-btn'));
+  
+  const draggedButton = buttons.find(btn => btn.dataset.type === draggedType);
+  const targetButton = buttons.find(btn => btn.dataset.type === targetType);
+  
+  if (draggedButton && targetButton) {
+    const draggedIndex = buttons.indexOf(draggedButton);
+    const targetIndex = buttons.indexOf(targetButton);
+    
+    // Remove dragged button
+    container.removeChild(draggedButton);
+    
+    // Insert at target position
+    if (draggedIndex < targetIndex) {
+      container.insertBefore(draggedButton, targetButton.nextSibling);
+    } else {
+      container.insertBefore(draggedButton, targetButton);
+    }
+    
+    // Save new order
+    saveToggleButtonOrder();
+  }
+}
+
+function saveToggleButtonOrder() {
+  const container = document.getElementById('toggleButtons');
+  const buttons = Array.from(container.querySelectorAll('.toggle-btn'));
+  const order = buttons.map(btn => btn.dataset.type);
+  
+  if (isChromeStorageAvailable()) {
+    chrome.storage.local.set({ [BUTTON_ORDER_KEY]: order });
+  }
+}
+
+function loadToggleButtonOrder() {
+  if (!isChromeStorageAvailable()) return;
+  
+  chrome.storage.local.get([BUTTON_ORDER_KEY], result => {
+    if (result[BUTTON_ORDER_KEY]) {
+      const container = document.getElementById('toggleButtons');
+      const buttons = Array.from(container.querySelectorAll('.toggle-btn'));
+      const order = result[BUTTON_ORDER_KEY];
+      
+      // Reorder buttons based on saved order
+      order.forEach(type => {
+        const button = buttons.find(btn => btn.dataset.type === type);
+        if (button) {
+          container.appendChild(button);
+        }
+      });
+    }
+  });
+}
+
+// --- Drag and Drop for Items ---
+function setupItemDragAndDrop() {
+  // We'll set up event listeners after rendering items
+}
+
+function setupItemDragListeners() {
+  const items = itemsContainer.querySelectorAll('.item-card');
+  
+  items.forEach(item => {
+    item.addEventListener('dragstart', handleItemDragStart);
+    item.addEventListener('dragend', handleItemDragEnd);
+    item.addEventListener('dragover', handleItemDragOver);
+    item.addEventListener('drop', handleItemDrop);
+    item.addEventListener('dragenter', handleItemDragEnter);
+    item.addEventListener('dragleave', handleItemDragLeave);
+  });
+}
+
+function handleItemDragStart(e) {
+  e.target.classList.add('dragging');
+  e.dataTransfer.setData('text/plain', e.target.dataset.idx);
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleItemDragEnd(e) {
+  e.target.classList.remove('dragging');
+  document.querySelectorAll('.item-card').forEach(card => {
+    card.classList.remove('drag-over');
+  });
+}
+
+function handleItemDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+}
+
+function handleItemDragEnter(e) {
+  e.preventDefault();
+  if (e.target.classList.contains('item-card')) {
+    e.target.classList.add('drag-over');
+  }
+}
+
+function handleItemDragLeave(e) {
+  if (e.target.classList.contains('item-card')) {
+    e.target.classList.remove('drag-over');
+  }
+}
+
+function handleItemDrop(e) {
+  e.preventDefault();
+  const draggedIdx = parseInt(e.dataTransfer.getData('text/plain'));
+  const targetIdx = parseInt(e.target.dataset.idx);
+  
+  if (!isNaN(draggedIdx) && !isNaN(targetIdx) && draggedIdx !== targetIdx) {
+    reorderItems(draggedIdx, targetIdx);
+  }
+  
+  e.target.classList.remove('drag-over');
+}
+
+function reorderItems(draggedIdx, targetIdx) {
+  // Get the current filtered items
+  const filteredItems = getFilteredItems();
+  const draggedItem = allItems[draggedIdx];
+  const targetItem = allItems[targetIdx];
+  
+  if (draggedItem && targetItem && draggedItem.type === currentType && targetItem.type === currentType) {
+    // Remove the dragged item
+    allItems.splice(draggedIdx, 1);
+    
+    // Find the new index for the target item after removal
+    const newTargetIdx = draggedIdx < targetIdx ? targetIdx - 1 : targetIdx;
+    
+    // Insert the dragged item at the target position
+    allItems.splice(newTargetIdx, 0, draggedItem);
+    
+    // Save the new order
+    saveItemOrder();
+    
+    // Re-render items
+    renderItems();
+  }
+}
+
+function saveItemOrder() {
+  if (isChromeStorageAvailable()) {
+    chrome.storage.local.set({ [ITEM_ORDER_KEY]: allItems });
+  }
+}
+
 function setupEventListeners() {
   toggleButtons.forEach(btn =>
     btn.addEventListener('click', () => setActiveType(btn.dataset.type))
@@ -137,6 +345,12 @@ function setupEventListeners() {
 
   // Add button
   document.querySelector('.add-btn').onclick = () => openModal();
+
+  // Setup drag and drop for toggle buttons
+  setupToggleButtonDragAndDrop();
+  
+  // Setup drag and drop for items
+  setupItemDragAndDrop();
 
   // Main CRUD buttons
   itemsContainer.addEventListener('click', e => {
@@ -234,7 +448,12 @@ function renderItems() {
     );
 
     return `
-      <div class="item-card" data-type="${item.type}">
+      <div class="item-card" data-type="${item.type}" data-idx="${idx}" draggable="true">
+        <div class="drag-handle" title="Drag to reorder">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/>
+          </svg>
+        </div>
         <div class="item-header">
           <h3 class="item-name">${escapeHtml(item.name)}</h3>
           <button class="copy-btn" data-content="${escapeHtml(item.link)}">
@@ -246,7 +465,9 @@ function renderItems() {
             Copy
           </button>
         </div>
-        <p class="item-content">${escapeHtml(text)}</p>
+        <div class="item-content-wrapper">
+          ${isLink ? `<a href="${escapeHtml(item.link)}" target="_blank" class="item-link" title="Click to open in new tab">${escapeHtml(text)}</a>` : `<p class="item-content">${escapeHtml(text)}</p>`}
+        </div>
         <div class="crud-btns">
           <button class="edit-btn" data-idx="${idx}" title="Edit">
             <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,6 +486,9 @@ function renderItems() {
         </div>
       </div>`;
   }).join('');
+  
+  // Setup drag listeners for the newly rendered items
+  setupItemDragListeners();
 }
 
 // --- Modal Logic (with button effect) ---
@@ -396,6 +620,7 @@ function persistAndRender() {
   if (isChromeStorageAvailable()) {
     chrome.storage.sync.set({ [STORAGE_KEY]: allItems });
     chrome.storage.local.set({ [STORAGE_KEY]: allItems });
+    saveItemOrder();
   }
   renderItems();
 }
