@@ -44,5 +44,20 @@ export const sampleData = [
     "name": "Meeting Agenda Generator",
     "link": "Generate a structured meeting agenda for the following topics, including time allocation and objectives for each item.",
     "type": "prompt"
+  },
+  {
+    "name": "Project Ideas",
+    "link": "1. Build a Chrome extension for quick access\n2. Create a note-taking app\n3. Develop a task management tool\n4. Design a portfolio website\n5. Build a weather app",
+    "type": "note"
+  },
+  {
+    "name": "Daily Goals",
+    "link": "✅ Complete project documentation\n📝 Review code changes\n🤝 Team meeting at 2 PM\n💡 Brainstorm new features\n📚 Read technical articles",
+    "type": "note"
+  },
+  {
+    "name": "Meeting Notes - Q4 Planning",
+    "link": "Date: December 15, 2024\n\nKey Points:\n- Q4 goals review\n- Resource allocation\n- Timeline adjustments\n\nAction Items:\n1. Update project roadmap\n2. Schedule follow-up meeting\n3. Prepare budget proposal",
+    "type": "note"
   }
 ];

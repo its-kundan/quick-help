@@ -946,3 +946,90 @@ body, html, .container { transition: background 0.25s, color 0.2s; }
 .darkmode .import-description {
   color: #9ca3af;
 }
+
+/* Notes Feature Styles */
+#itemInputContainer {
+  position: relative;
+  width: 100%;
+}
+
+#itemNote {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 1.2px solid #ddd;
+  border-radius: 12px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #f7fafc;
+  color: #374151;
+  resize: vertical;
+  outline: none;
+  transition: all 0.2s;
+  line-height: 1.5;
+  display: none;
+}
+
+#itemNote:focus {
+  border-color: #22d3ee;
+  background: #f0f9ff;
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+}
+
+#itemNote::placeholder {
+  color: #9ca3af;
+}
+
+/* Note item styling */
+.item-card[data-type="note"] .item-content {
+  white-space: pre-wrap;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 3px solid #22d3ee;
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.item-card[data-type="note"] .item-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.item-card[data-type="note"] .item-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.item-card[data-type="note"] .item-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dark mode for notes */
+.darkmode #itemNote {
+  background: #1a1a1d;
+  color: #e5e7eb;
+  border-color: #18181b;
+}
+
+.darkmode #itemNote:focus {
+  background: #0f172a;
+  border-color: #22d3ee;
+}
+
+.darkmode .item-card[data-type="note"] .item-content {
+  background: #1f2937;
+  border-left-color: #22d3ee;
+  color: #e5e7eb;
+}
+
+.darkmode .item-card[data-type="note"] .item-content::-webkit-scrollbar-thumb {
+  background: #4b5563;
+}
+
+.darkmode .item-card[data-type="note"] .item-content::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}

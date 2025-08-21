@@ -48,10 +48,13 @@ if (!document.getElementById('itemModal')) {
         <h2 id="modalTitle">Add Item</h2>
         <div id="modalWarning" style="color:#dc2626;font-size:13px;min-height:22px;margin-bottom:2px"></div>
         <input id="itemName" placeholder="Name" type="text" required />
-        <input id="itemLink" placeholder="URL or Prompt" type="text" required />
+        <div id="itemInputContainer">
+          <input id="itemLink" placeholder="URL or Prompt" type="text" required />
+        </div>
         <select id="itemType">
           <option value="link">Link</option>
           <option value="prompt">Prompt</option>
+          <option value="note">Note</option>
         </select>
         <button id="saveItemBtn" type="button">Save</button>
         <button id="cancelItemBtn" type="button">Cancel</button>
@@ -214,9 +217,16 @@ function renderItems() {
 
   itemsContainer.innerHTML = list.map(item => {
     const isLink = item.type === 'link';
-    const text = isLink
-      ? item.link
-      : (item.link.length > 100 ? item.link.slice(0, 100) + '…' : item.link);
+    const isNote = item.type === 'note';
+    
+    let text;
+    if (isLink) {
+      text = item.link;
+    } else if (isNote) {
+      text = item.link; // Notes show full content
+    } else {
+      text = (item.link.length > 100 ? item.link.slice(0, 100) + '…' : item.link);
+    }
 
     // Find index in allItems
     const idx = allItems.findIndex(i =>
@@ -224,7 +234,7 @@ function renderItems() {
     );
 
     return `
-      <div class="item-card">
+      <div class="item-card" data-type="${item.type}">
         <div class="item-header">
           <h3 class="item-name">${escapeHtml(item.name)}</h3>
           <button class="copy-btn" data-content="${escapeHtml(item.link)}">
@@ -267,6 +277,9 @@ function openModal(item = null, idx = null) {
   document.getElementById('modalWarning').textContent = '';
   editIndex = idx;
 
+  // Handle input type switching
+  handleInputTypeChange();
+
   // Effect for Save/Cancel
   const saveBtn = document.getElementById('saveItemBtn');
   const cancelBtn = document.getElementById('cancelItemBtn');
@@ -283,24 +296,77 @@ function openModal(item = null, idx = null) {
     setTimeout(() => cancelBtn.classList.remove('cancel-btn-effect'), 1000);
     closeModal();
   };
+
+  // Add event listener for type change
+  document.getElementById('itemType').addEventListener('change', handleInputTypeChange);
+}
+
+function handleInputTypeChange() {
+  const itemType = document.getElementById('itemType').value;
+  const itemLink = document.getElementById('itemLink');
+  const itemInputContainer = document.getElementById('itemInputContainer');
+  
+  // Remove existing textarea if present
+  const existingTextarea = document.getElementById('itemNote');
+  if (existingTextarea) {
+    existingTextarea.remove();
+  }
+
+  if (itemType === 'note') {
+    // Create textarea for notes
+    const textarea = document.createElement('textarea');
+    textarea.id = 'itemNote';
+    textarea.placeholder = 'Enter your note content...\n\nYou can use multiple lines and formatting.';
+    textarea.value = itemLink.value;
+    textarea.style.display = 'block';
+    
+    // Hide the input and show textarea
+    itemLink.style.display = 'none';
+    itemInputContainer.appendChild(textarea);
+    
+    // Focus on textarea
+    setTimeout(() => textarea.focus(), 100);
+  } else {
+    // Show input for links and prompts
+    itemLink.style.display = 'block';
+    itemLink.placeholder = itemType === 'link' ? 'URL' : 'Prompt';
+  }
 }
 
 function closeModal() {
   document.getElementById('itemModal').style.display = 'none';
   document.getElementById('modalWarning').textContent = '';
   editIndex = null;
+  
+  // Clean up textarea if it exists
+  const textarea = document.getElementById('itemNote');
+  if (textarea) {
+    textarea.remove();
+  }
+  
+  // Reset input display
+  const itemLink = document.getElementById('itemLink');
+  itemLink.style.display = 'block';
 }
 
 // --- Duplicate check and save ---
 function saveItem() {
   const name = document.getElementById('itemName').value.trim();
-  const link = document.getElementById('itemLink').value.trim();
   const type = document.getElementById('itemType').value;
   const warningDiv = document.getElementById('modalWarning');
   warningDiv.textContent = '';
 
+  // Get the correct value based on type
+  let link;
+  if (type === 'note') {
+    const textarea = document.getElementById('itemNote');
+    link = textarea ? textarea.value.trim() : '';
+  } else {
+    link = document.getElementById('itemLink').value.trim();
+  }
+
   if (!name || !link) {
-    warningDiv.textContent = 'Name and Link/Prompt required';
+    warningDiv.textContent = 'Name and content required';
     return;
   }
 
