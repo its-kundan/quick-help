@@ -71,14 +71,6 @@ PRIVACY & PERMISSIONS:
 🚫 No tracking: We don't collect any personal information
 🚫 No ads: Clean experience with no monetization
 
-REAL USER BENEFITS:
-
-"I used to spend 5 minutes every morning opening all my work tools. Now it's 30 seconds!" - Marketing Professional
-
-"My ChatGPT prompts are finally organized. I can copy my best templates instantly!" - Content Creator
-
-"Perfect for keeping my research links organized. No more lost bookmarks!" - Student
-
 Ready to boost your productivity? Install Quick Links & Prompts today and start saving time immediately!
 
 No account required. No setup hassle. Just simple, powerful productivity in your browser.
